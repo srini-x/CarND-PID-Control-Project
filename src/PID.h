@@ -18,6 +18,24 @@ public:
   double Kd;
 
   /*
+  * Twiddle
+  */
+  double total_abs_cte;
+  double best_total_cte;
+  double counter;
+  double tol;
+  double dKp;
+  double dKi;
+  double dKd;
+  int twiddle_it;
+  int max_count;
+  double *twiddle_p;
+  double *twiddle_dp;
+  bool Kp_stable;
+  bool Kd_stable;
+  bool Ki_stable;
+
+  /*
   * Constructor
   */
   PID();
@@ -41,6 +59,11 @@ public:
   * Calculate the total PID error.
   */
   double TotalError();
+
+  /*
+  * Tune the Coefficients using the twiddle algorithm
+  */
+  void Twiddle();
 };
 
 #endif /* PID_H */
