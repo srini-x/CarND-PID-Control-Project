@@ -20,20 +20,25 @@ public:
   /*
   * Twiddle
   */
+  bool tune;
+
   double total_abs_cte;
   double best_total_cte;
+
   double counter;
+  int max_count;
+  int loop_num;
+
   double tol;
   double dKp;
   double dKi;
   double dKd;
-  int twiddle_it;
-  int max_count;
+
   double *twiddle_p;
   double *twiddle_dp;
-  bool Kp_stable;
-  bool Kd_stable;
-  bool Ki_stable;
+
+  int state;
+  int next_p;
 
   /*
   * Constructor
@@ -48,7 +53,7 @@ public:
   /*
   * Initialize PID.
   */
-  void Init(double Kp_in, double Ki_in, double Kd_in);
+  void Init(double Kp_in, double Ki_in, double Kd_in, double dKp_in, double dKi_in, double dKd_in, int max_count_in);
 
   /*
   * Update the PID error variables given cross track error.
@@ -64,6 +69,11 @@ public:
   * Tune the Coefficients using the twiddle algorithm
   */
   void Twiddle();
+
+  /*
+  * Tune the Coefficients using the twiddle algorithm
+  */
+  void SelectNextParam();
 };
 
 #endif /* PID_H */
