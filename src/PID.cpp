@@ -23,9 +23,9 @@ void PID::Init(double Kp_in, double Ki_in, double Kd_in,
   i_error = 0;
 
 
-  dKp = dKp_in;  // 0.1;
-  dKi = dKi_in;  // 0.00005;
-  dKd = dKd_in;  // 1.0;
+  dKp = dKp_in;
+  dKi = dKi_in;
+  dKd = dKd_in;
 
   tol = 0.2;
   p_error = 0;
@@ -34,7 +34,7 @@ void PID::Init(double Kp_in, double Ki_in, double Kd_in,
 
   counter = 0;
   loop_num = 0;
-  max_count = max_count_in;  // 2100;
+  max_count = max_count_in;
 
   next_p = 0;
   state = 0;
@@ -59,8 +59,6 @@ double PID::TotalError() {
     // twiddle related
     counter++;
     total_abs_cte += fabs(p_error);
-
-    // std::cout << counter << endl;
 
     if (counter == max_count) {
       if (loop_num == 0) {
