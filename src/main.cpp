@@ -37,7 +37,9 @@ int main() {
   // Kp: 0.15 Kd: 1 Ki: 0.00015 - throttle 0.3
   // Kp: 0.055 Kd: 1.4 Ki: 0.00015 - 70 mph
   // Kp: 0.035 Kd: 1.5 Ki: 0.00015 - 80 mph - almost there
-  pid.Init(0.055, 0.00015, 1.40, 0.01, 0.00005, 0.2, 21000);
+  // Use the following line for 70 mph
+  // pid.Init(0.055, 0.00015, 1.40, 0.01, 0.00005, 0.2, 21000);
+  pid.Init(0.15, 0.00015, 1, 0.01, 0.00005, 0.2, 21000);
   throttle_pid.Init(0.2, 0.0001, 3, 0.1, 0.001, 1.0, 200);
   pid.tune = false;
   throttle_pid.tune = false;
@@ -84,6 +86,8 @@ int main() {
           } else if (throttle < min_throttle) {
             throttle = min_throttle;
           }
+          // comment the following line to run at 70 mph
+          throttle = 0.3;
 
           json msgJson;
           msgJson["steering_angle"] = steer_value;
