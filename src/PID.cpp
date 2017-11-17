@@ -18,6 +18,11 @@ void PID::Init(double Kp_in, double Ki_in, double Kd_in,
   Ki = Ki_in;
   Kd = Kd_in;
 
+  p_error = 0;
+  d_error = 0;
+  i_error = 0;
+
+
   dKp = dKp_in;  // 0.1;
   dKi = dKi_in;  // 0.00005;
   dKd = dKd_in;  // 1.0;
@@ -35,14 +40,15 @@ void PID::Init(double Kp_in, double Ki_in, double Kd_in,
   state = 0;
 
   tune = true;
-  std::cout << "Kp: " << Kp << " Kd: " << Kd << " Ki: " << Ki << std::endl;
-  std::cout << "dKp: " << dKp << " dKd: " << dKd << " dKi: " << dKi << std::endl;
 }
 
 void PID::UpdateError(double cte) {
   // Update errors
   d_error = cte - p_error;
   p_error = cte;
+  if (fabs(cte) < 0.0001) {
+    i_error = 0;
+  }
   i_error += cte;
 }
 

@@ -34,13 +34,15 @@ int main() {
   PID pid;
   PID throttle_pid;
   // TODO: Initialize the pid variable.
-  // Kp: 0.798209 Kd: 9.08019 Ki: 0.0001981
-  // Kp: 0.4 Kd: 9 Ki: 0.00015
-  pid.Init(0.4, 0.00015, 9.0, 0.1, 0.00005, 1.0, 2100);
-  // Kp: 0.80396 Kd: 8.43047 Ki: 0.0001
-  throttle_pid.Init(1.5, 0.0001, 10, 0.1, 0.001, 1.0, 200);
+  // Kp: 0.15 Kd: 1 Ki: 0.00015 - throttle 0.3
+  // Kp: 0.055 Kd: 1.4 Ki: 0.00015 - 70 mph
+  // Kp: 0.035 Kd: 1.5 Ki: 0.00015 - 80 mph - almost there
+  pid.Init(0.055, 0.00015, 1.40, 0.01, 0.00005, 0.2, 21000);
+  throttle_pid.Init(0.2, 0.0001, 3, 0.1, 0.001, 1.0, 200);
   pid.tune = false;
   throttle_pid.tune = false;
+  std::cout << "Steer PID - Kp: " << pid.Kp << " Kd: " << pid.Kd << " Ki: " << pid.Ki << std::endl;
+  std::cout << "Throttle PID - Kp: " << throttle_pid.Kp << " Kd: " << throttle_pid.Kd << " Ki: " << throttle_pid.Ki << std::endl;
 
   h.onMessage([&pid, &throttle_pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
@@ -57,8 +59,10 @@ int main() {
           double speed = std::stod(j[1]["speed"].get<std::string>());
           double angle = std::stod(j[1]["steering_angle"].get<std::string>());
           double steer_value;
-          double throttle;
-          double target_speed = 30;
+          double throttle = 0;
+          double max_throttle = 1.0;
+          double min_throttle = -1.0;
+          double target_speed = 72;
           /*
           * TODO: Calcuate steering value here, remember the steering value is
           * [-1, 1].
@@ -73,27 +77,12 @@ int main() {
             steer_value = -1;
           }
 
-          if (fabs(steer_value) > 0.8) {
-              target_speed = 5;
-          } else if (fabs(steer_value) > 0.6) {
-              target_speed = 10;
-          } else if (fabs(steer_value) > 0.4) {
-              target_speed = 15;
-          } else if (fabs(steer_value) > 0.2) {
-              target_speed = 20;
-          } else if (fabs(steer_value) > 0.1) {
-              target_speed = 20;
-          } else if (fabs(steer_value) > 0.0) {
-              target_speed = 35;
-          }
-          double speed_cte = speed - target_speed;
-
-          throttle_pid.UpdateError(speed_cte);
+          throttle_pid.UpdateError(speed - target_speed);
           throttle = throttle_pid.TotalError();
-          if (throttle > 0.9) {
-            throttle = 0.9;
-          } else if (throttle < 0.1) {
-            throttle = 0.1;
+          if (throttle > max_throttle) {
+            throttle = max_throttle;
+          } else if (throttle < min_throttle) {
+            throttle = min_throttle;
           }
 
           json msgJson;
