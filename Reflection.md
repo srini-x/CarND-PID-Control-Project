@@ -19,10 +19,10 @@ called *PID Controller*.
 ## Concepts
 A PID controller is a type of feedback system that works by eliminating or reducing the error between the desired
 value and the current measured value. The error here is called CTE, short for Cross
-Track Error. 
+Track Error.
 
 ### PID controller has 3 components
-CTE is eliminated by applying a correction which includes a proportional(P) component, Integral(I) component, and a Derivative(D) component. 
+CTE is eliminated by applying a correction which includes a proportional(P) component, Integral(I) component, and a Derivative(D) component.
 
 #### P Component
 P component is the part that is directly proportional to the error. That means,
@@ -76,6 +76,8 @@ implementing the twiddle algorithm because of the following reasons
 - The number of messages in one lap changes from lap to lap. So, I was not able
   to estimate a consistent lap.
 - There could be some error/delay in how `cte` is calculated in the simulator.
+- There is somithing going wrong and I am not able to figure it out. Please let
+  me know if you find it.
 
 I was able to drive the car around the track at a maximum speed of *70 mph*. I
 also drove the car at default `throttle = 0.3`. I had to use 2 different sets
@@ -83,13 +85,32 @@ of parameters to do this. My intuition is that we have to turn the steering a
 lot more while driving slow compared to when we are driving faster.
 
 My manually tuned coefficients are:
-- Kp: 0.055, Kd: 1.4, Ki: 0.00015 - 70 mph
-- Kp: 0.15,  Kd: 1,   Ki: 0.00015 - throttle 0.3
+
+#### Steering PID Coefficients
+- 70 mph - Kp = 0.055, Kd = 1.4, Ki = 0.00015
+- throttle 0.3 - Kp = 0.15, Kd = 1, Ki = 0.00015
+
+#### Throttle PID Coefficients
+- Kp = 0.15, Kd = 1, Ki = 0.00015
+
 
 ## Results
 
 I ran the simulator at `640x480` resolution and `Fastest` setting for best
 performance. My computer has a Core i7-7700k and a Nvidia GTX 1060 6GB.
 
-- Video for my default `throttle = 0.3` - 
-- Video for my 70 mph run - 
+- Video for my default `throttle = 0.3` - https://www.youtube.com/watch?v=XkjdxzJ8m94
+- Video for my 70 mph run - https://www.youtube.com/watch?v=CDIgxH13IOE
+
+The code in the repo is set to run at throttle = 0.3 mode. To enable 70 mph,
+comment line 42 and 90, uncomment line 41 in `main.cpp`.
+
+
+## Improvements
+Here is a list of potential improvements:
+- Fix twiddle by capturing the `angle` and `cte` values for an entire lap and
+  use it as input to twiddle???
+- I noticed that PID coefficients are specific to a certain speed of the car. I
+  wasn't able to find a reliable way to run the car at variable speed as in
+  speed up on straight roads and slow down for the corners like real sports
+  car. Being able to change the speed on demand will be more effective.
